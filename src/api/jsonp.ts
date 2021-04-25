@@ -14,9 +14,8 @@ const jsonp = (url: string, data: any) => {
   if (data) {
     if (typeof data === "string") {
       ret = "&" + data;
-    }
-    else if(typeof data === 'object') {
-      for (let key in data) {
+    } else if (typeof data === "object") {
+      for (const key in data) {
         ret += "&" + key + "=" + encodeURIComponent(data[key]);
       }
     }
@@ -24,13 +23,13 @@ const jsonp = (url: string, data: any) => {
   }
   JSONP.src = `${url}?callback=${callback}${ret}`;
   return new Promise((resolve, reject) => {
-    <any>window[<any>callback] = (r: any) => {
+    window[callback] = (r: any) => {
       resolve(r);
       headEle.removeChild(JSONP);
-      delete (<any>window)[callback];
+      delete window[callback];
     };
     headEle.appendChild(JSONP);
-  });;
-};;
+  });
+};
 
 export default jsonp;

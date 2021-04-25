@@ -1,6 +1,7 @@
 /** @format */
 
 const FileManagerPlugin = require("filemanager-webpack-plugin");
+const compressing = require("compressing");
 
 module.exports = {
   chainWebpack: config => {
@@ -26,30 +27,24 @@ module.exports = {
     }
   },
   productionSourceMap: false,
-  configureWebpack: {
-    //webpack的相关配置在这里
-    plugins: [
-      new FileManagerPlugin({
-        //初始化 filemanager-webpack-plugin 插件实例
-        events: {
-          onEnd: {
-            delete: [
-              //首先需要删除项目根目录下的dist压缩包
-              "./dist.tar"
-            ],
-            archive: [
-              //然后我们选择dist文件夹将之打包成dist.tar并放在根目录
-              {
-                source: "./dist",
-                destination: "./dist/dist.tar",
-                options: {
-                  gzip: true
-                }
-              }
-            ]
-          }
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === "production") {
+      config.plugins.push({
+        apply: compiler => {
+          compiler.hooks.done.tap("tar", compilation => {
+            compressing.tar
+              .compressDir("dist", "dist.tar")
+              .then(() => {
+                console.log("success");
+              })
+              .catch(err => {
+                console.error(err);
+              });
+          });
         }
-      })
-    ]
+      });
+    } else {
+      // 为开发环境修改配置...
+    }
   }
 };
