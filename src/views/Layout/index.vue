@@ -18,23 +18,15 @@
 
 <script lang="ts">
 import { onMounted, reactive, ref } from "vue";
-import { tofLogin } from "@/api";
 
 export default {
   setup() {
     const header = "header";
     const nav = "nav";
-    onMounted(() => {
-      login();
-    });
-    const login = async () => {
-      const res = await tofLogin({}, { server: "mock" });
-      console.log(res);
-    };
+
     return {
       header,
-      nav,
-      login
+      nav
     };
   }
 };
